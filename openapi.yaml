@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: PIX Refund Service API
+  description: Serviço de estorno e devoluções de transações PIX
+  version: 1.0.0
+  contact:
+    name: Equipe PIX
+    email: pix@zetra-bank.com
+
+servers:
+  - url: https://api.zetra-bank.com/pix-refund
+    description: Production
+
+paths:
+  /refunds:
+    post:
+      summary: Solicitar estorno de PIX
+      operationId: requestPixRefund
+      tags:
+        - Refunds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                originalTransactionId:
+                  type: string
+                amount:
+                  type: number
+                reason:
+                  type: string
+                  enum: [DUPLICATE, WRONG_AMOUNT, UNAUTHORIZED, TECHNICAL_ERROR, OTHER]
+      responses:
+        '201':
+          description: Estorno solicitado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refundId:
+                    type: string
+                  status:
+                    type: string
+                    enum: [PENDING, APPROVED, PROCESSING, COMPLETED, REJECTED]
+
+    get:
+      summary: Listar estornos
+      operationId: listRefunds
+      tags:
+        - Refunds
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Lista de estornos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    refundId:
+                      type: string
+                    status:
+                      type: string
+                    amount:
+                      type: number
+
+  /refunds/{refundId}:
+    get:
+      summary: Consultar status de um estorno
+      operationId: getRefundStatus
+      tags:
+        - Refunds
+      parameters:
+        - name: refundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do estorno
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refundId:
+                    type: string
+                  originalTransactionId:
+                    type: string
+                  amount:
+                    type: number
+                  status:
+                    type: string
+                  reason:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  completedAt:
+                    type: string
+                    format: date-time
+
+    put:
+      summary: Atualizar estorno
+      operationId: updateRefund
+      tags:
+        - Refunds
+      parameters:
+        - name: refundId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [APPROVED, REJECTED]
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Estorno atualizado com sucesso
