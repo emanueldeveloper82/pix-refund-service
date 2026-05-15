@@ -13,4 +13,4 @@ spec:
   owner: group:pix 
   # Vinculado ao domínio financeiro
   domain: financeiro
-  system: pix-ecosystem
+  system: system:pix-ecosystem
