@@ -6,12 +6,25 @@ metadata:
   annotations:
     github.com/project-slug: emanueldeveloper82/pix-refund-service
     backstage.io/techdocs-ref: dir:.
-    backstage.io/api-docs-ref: file: ./openapi.yaml
 spec:
   type: service
   lifecycle: production
-  # Vinculado ao grupo que já está funcionando no seu central-catalog
-  owner: group:pix 
-  # Vinculado ao domínio financeiro
+  owner: group:pix
   domain: financeiro
   system: system:pix-ecosystem
+  providesApis:
+    - pix-refund-service-api
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: pix-refund-service-api
+  description: "Especificação OpenAPI do PIX Refund Service"
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:pix
+  system: system:pix-ecosystem
+  definition:
+    $text: ./openapi.yaml
